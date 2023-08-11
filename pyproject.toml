@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "jamsapi"
+version = "0.1.0"
+description = "A basic API for JAMS. This is a work in progress."
+authors = ["Arpan Pandey <arpanpandey.aps@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.101.0"
+uvicorn = {extras = ["standard"], version = "^0.23.2"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
