@@ -5,9 +5,18 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Add CORS middleware to allow all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Database connection parameters
 db_host = os.getenv("DB_HOST")
 db_port = os.getenv("DB_PORT")
