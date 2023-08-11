@@ -67,7 +67,7 @@ def delete_submission_from_database(url):
     except Exception as e:
         return {"message": f"Error: {e}"}
 
-def get_jams_from_database():
+def get_submissions_from_database():
     try:
         connection = psycopg2.connect(
             host=db_host,
@@ -161,9 +161,9 @@ async def submit_jams(jam_slug: str, finishedURL: str):
     except Exception as e:
         return {"message": f"Error: {e}"}
 
-@app.get("/getJams")
-async def get_jams():
-    jams = get_jams_from_database()
+@app.get("/getSubmissions")
+async def get_submissions():
+    jams = get_submissions_from_database()
     return jams
 
 @app.delete("/deleteSubmission")
