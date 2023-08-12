@@ -5,11 +5,11 @@ A basic API for JAMS. This is a work in progress.
 
 | Route | Method | Supported? |
 | --- | --- |  --- |
-| `/openai/models` | GET | :check_mark: |
-| `/openai/models/:model` | GET | :check_mark: |
-| `/openai/chat/completions` | POST | :check_mark: |
-| `images/generations` | POST | :check_mark: |
-| `/embeddings` | POST | :check_mark: |
+| `/openai/models` | GET | [x] |
+| `/openai/models/:model` | GET | [x] |
+| `/openai/chat/completions` | POST | [x] |
+| `images/generations` | POST | [x] |
+| `/embeddings` | POST | [x] |
 
 Rest of the routes are not supported yet.
 
