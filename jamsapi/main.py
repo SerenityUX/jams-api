@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 from fastapi.middleware.cors import CORSMiddleware
+from api_analytics.fastapi import Analytics
 
 
 app = FastAPI(
@@ -29,6 +30,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(Analytics, api_key=os.getenv("ANALYTICS_API_KEY"))
+
 # Database connection parameters
 db_host = os.getenv("DB_HOST")
 db_port = os.getenv("DB_PORT")

@@ -215,6 +215,25 @@ typing-extensions = ">=4.5.0"
 all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.5)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "fastapi-analytics"
+version = "1.1.4"
+description = "Monitoring and analytics for FastAPI applications."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "fastapi-analytics-1.1.4.tar.gz", hash = "sha256:9da4a8065aa37d8bb3832c97897732032ebf4387579569d68c6f586023191fa5"},
+    {file = "fastapi_analytics-1.1.4-py3-none-any.whl", hash = "sha256:49222a47d019d72d67e8a0ece1d937b26fd747ffa15a786c6175a0838c61a984"},
+]
+
+[package.dependencies]
+fastapi = "*"
+requests = "*"
+
+[package.extras]
+build = ["build", "twine"]
+dev = ["pytest"]
+
+[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -876,4 +895,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "3056a37a04872f165f00970cd46d4b30fa67463401b361d448437d19d2a5846e"
+content-hash = "685ea8248f0b8058829a9a911eaaae60233c645a9cc378b8284d5152d5574068"
