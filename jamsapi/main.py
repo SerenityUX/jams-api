@@ -213,12 +213,10 @@ def embeddings(data: dict, response: Response):
     response.status_code = openai_requests.embeddings(data)[1]
     return openai_requests.embeddings(data)[0]
 
-@app.get("/submitJam/{jam_slug}/{finishedURL:path}")
-async def submit_jams(jam_slug: str, finishedURL: str):
+@app.get("/submitJam/{jam_slug}/{finishedURL:path}/{title}")
+async def submit_jams(jam_slug: str, finishedURL: str, title: str):
     try:
         decoded_url = urllib.parse.unquote(finishedURL)
-        title = get_title_from_url(decoded_url)
-
         if title:
             save_submission_to_database(jam_slug, title, decoded_url)
             return {"message": "Submission successful"}
