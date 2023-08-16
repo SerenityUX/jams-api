@@ -31,8 +31,9 @@ def post_chat_completions(data):
         Post a chat to OpenAI API
     """
     try:
-        req = requests.post('https://api.openai.com/v1/chat/completions', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"})
-        return req.json(), req.status_code, req.headers
+        with requests.post('https://api.openai.com/v1/chat/completions', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"}, stream=True) as req:
+            for chunk in req.iter_content(chunk_size=1024):
+                yield chunk
     except Exception as e:
         return {"error": str(e)}, 500, {"error": str(e)}
     
@@ -43,8 +44,9 @@ def create_image(data):
         Create an image on OpenAI API
     """
     try:
-        req = requests.post('https://api.openai.com/v1/images/generations', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"})
-        return req.json(), req.status_code, req.headers
+        with requests.post('https://api.openai.com/v1/images/generations', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"}, stream=True) as req:
+            for chunk in req.iter_content(chunk_size=1024):
+                yield chunk
     except Exception as e:
         return {"error": str(e)}, 500, {"error": str(e)}
     
@@ -57,8 +59,9 @@ def embeddings(data):
         Get the embeddings of a text on OpenAI API
     """
     try:
-        req = requests.post('https://api.openai.com/v1/embeddings', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"})
-        return req.json(), req.status_code, req.headers
+        with requests.post('https://api.openai.com/v1/embeddings', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"}, stream=True) as req:
+            for chunk in req.iter_content(chunk_size=1024):
+                yield chunk
     except Exception as e:
         return {"error": str(e)}, 500, {"error": str(e)}
     

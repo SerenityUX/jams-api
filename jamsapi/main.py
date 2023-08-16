@@ -1,6 +1,7 @@
 import jamsapi.router.openai as openai_requests
 
 from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi.responses import StreamingResponse
 import psycopg2
 from datetime import datetime
 import urllib.parse
@@ -193,25 +194,24 @@ def post_chat_completions(data: dict, response: Response):
     """
         Post a chat to OpenAI API
     """
-    response.status_code = openai_requests.post_chat_completions(data)[1]
-    return openai_requests.post_chat_completions(data)[0]
+    resp = openai_requests.post_chat_completions(data)
+    return StreamingResponse(resp, media_type="text/json")
 
 @app.post("/openai/images/generations")
 def create_image(data: dict, response: Response):
     """
         Create an image on OpenAI API
     """
-    response.status_code = openai_requests.create_image(data)[1]
-    return openai_requests.create_image(data)[0]
-
+    resp = openai_requests.create_image(data)
+    return StreamingResponse(resp, media_type="image/png")
 
 @app.post("/openai/embeddings")
 def embeddings(data: dict, response: Response):
     """
         Get the embeddings of a text on OpenAI API
     """
-    response.status_code = openai_requests.embeddings(data)[1]
-    return openai_requests.embeddings(data)[0]
+    resp = openai_requests.embeddings(data)
+    return StreamingResponse(resp, media_type="text/json")
 
 @app.get("/submitJam/{jam_slug}/{finishedURL:path}/{title}")
 async def submit_jams(jam_slug: str, finishedURL: str, title: str):
