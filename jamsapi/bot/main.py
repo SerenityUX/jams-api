@@ -10,12 +10,12 @@ app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 
 # * Slash Commands
 @app.command("/openai-token")
-def openai_token(ack, say, command):
+def openai_token(ack, respond, command):
     ack()
     slack_id = command["user_id"]
 
     if openai_tokens.get_token_by_slack_id(slack_id) is None:
-        say("You don't have a token yet. Please create one.")
+        respond("You don't have a token yet. Please create one.")
 
     else:
         token = openai_tokens.get_token_by_slack_id(slack_id)
@@ -23,16 +23,16 @@ def openai_token(ack, say, command):
         date = token.expires_at
         # Format the date into a string
         date = date.strftime("%d/%m/%Y, %H:%M:%S")
-        say(f"Your token is `{token.token}`. It expires on *{date}*.")
+        respond(f"Your token is `{token.token}`. It expires on *{date}*.")
 
 
 @app.command("/openai-create-token")
-def openai_create_token(ack, say, command):
+def openai_create_token(ack, respond, command):
     ack()
     slack_id = command["user_id"]
 
     if openai_tokens.get_token_by_slack_id(slack_id) is not None:
-        say("You already have a token. Please use that instead.")
+        respond("You already have a token. Please use that instead.")
 
     else:
         openai_auth.create_token(slack_id)
@@ -41,21 +41,21 @@ def openai_create_token(ack, say, command):
         date = token.expires_at
         # Format the date into a string
         date = date.strftime("%d/%m/%Y, %H:%M:%S")
-        say(f"Your token is `{token.token}`. It expires on *{date}*.")
+        respond(f"Your token is `{token.token}`. It expires on *{date}*.")
 
 
 @app.command("/openai-revoke-token")
-def openai_revoke_token(ack, say, command):
+def openai_revoke_token(ack, respond, command):
     ack()
     slack_id = command["user_id"]
 
     if openai_tokens.get_token_by_slack_id(slack_id) is None:
-        say("You don't have a token yet. Please create one.")
+        respond("You don't have a token yet. Please create one.")
 
     else:
         # Todo: Add confirmation
         openai_auth.revoke_token(slack_id)
-        say("Your token has been revoked.")
+        respond("Your token has been revoked.")
 
 
 if __name__ == "__main__":
