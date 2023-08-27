@@ -22,7 +22,16 @@ def validate_token(token):
 
 def use_token(token):
     if not validate_token(token):
+        if token.uses_left == 0:
+            token.status = "Expired"
+
+        if token.expires_at < datetime.now():
+            token.status = "Expired"
+
+        token.save()
+
         return False
+
     token = openai_tokens.get_token(token)
 
     if token.uses_left == 1:
