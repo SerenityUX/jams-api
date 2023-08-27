@@ -1,7 +1,7 @@
 from pyairtable.orm import Model, fields as F
 import os
 from dotenv import load_dotenv
-import jamsapi.openai.auth as openai_auth
+import datetime
 
 load_dotenv()
 
@@ -45,7 +45,7 @@ def get_token(token):
     #! This is a very inefficient way to do this, but I don't know how to do it better with pyairtable at the moment :(
     tokens = OpenAIToken.all()
     for t in tokens:
-        if t.token == token and openai_auth.validate_token(t.token):
+        if t.token == token:
             return t
     return None
 
@@ -54,7 +54,7 @@ def get_token_by_slack_id(slack_id):
     #! This is a very inefficient way to do this, but I don't know how to do it better with pyairtable at the moment :(
     tokens = OpenAIToken.all()
     for t in tokens:
-        if t.slack_id == slack_id and openai_auth.validate_token(t.token):
+        if t.slack_id == slack_id and t.status == "Active" and t.expires_at > datetime.now() and t.uses_left > 0:
             return t
     return None
 
