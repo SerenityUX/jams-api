@@ -1,6 +1,6 @@
-import jamsapi.router.openai as openai_requests
+import jamsapi.openai.openai as openai_requests
 
-from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi import FastAPI, HTTPException, Query, Response, Depends
 from fastapi.responses import StreamingResponse
 import psycopg2
 from datetime import datetime
@@ -9,18 +9,17 @@ import requests
 from bs4 import BeautifulSoup
 import os
 from fastapi.middleware.cors import CORSMiddleware
-from api_analytics.fastapi import Analytics
+import jamsapi.openai.auth as openai_auth
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from typing import Annotated
 
+security = HTTPBearer()
 
 app = FastAPI(
     title="JAMS API",
     description="An API for Jams services and an API gateway for other needed services.",
     version="0.0.1",
-    contact={
-        "name": "Arpan Pandey",
-        "email": "arpan@hackclub.com"
-    }
-
+    contact={"name": "Arpan Pandey", "email": "arpan@hackclub.com"},
 )
 
 # Add CORS middleware to allow all origins
@@ -31,8 +30,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.add_middleware(Analytics, api_key=os.getenv("ANALYTICS_API_KEY"))
 
 # Database connection parameters
 db_host = os.getenv("DB_HOST")
@@ -69,6 +66,7 @@ def delete_submission_from_database(url):
     except Exception as e:
         return {"message": f"Error: {e}"}
 
+
 def delete_submission_from_database(url):
     try:
         connection = psycopg2.connect(
@@ -92,6 +90,7 @@ def delete_submission_from_database(url):
 
     except Exception as e:
         return {"message": f"Error: {e}"}
+
 
 def get_submissions_from_database():
     try:
@@ -118,7 +117,7 @@ def get_submissions_from_database():
                 "jam": jam[0],
                 "title": jam[1],
                 "url": jam[2],
-                "timeCreated": jam[3]
+                "timeCreated": jam[3],
             }
             jam_list.append(jam_obj)
 
@@ -133,12 +132,13 @@ def get_title_from_url(url):
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception for non-200 status codes
 
-        soup = BeautifulSoup(response.text, 'html.parser')
+        soup = BeautifulSoup(response.text, "html.parser")
         title = soup.title.string if soup.title else None
         return title
     except requests.exceptions.RequestException as e:
         print(f"Error fetching URL: {e}")
         return None
+
 
 def save_submission_to_database(jam_slug, title, url):
     try:
@@ -168,50 +168,113 @@ def save_submission_to_database(jam_slug, title, url):
     except Exception as e:
         return {"message": f"Error: {e}"}
 
+
 @app.get("/")
 def root():
-    return {"message": "Hello World, from JAMS API! Head over to /docs or /redoc to see the API documentation."}
+    return {
+        "message": "Hello World, from JAMS API! Head over to /docs or /redoc to see the API documentation."
+    }
+
+
+def authenticate(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """
+    Authenticate the user using the token
+    """
+    sec = credentials.credentials
+
+    if not openai_auth.validate_token(sec):
+        return False
+
+    if not openai_auth.use_token(sec):
+        return True
+
+    return sec
 
 
 @app.get("/openai/models")
-def models(response: Response):
+def models(
+    response: Response,
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+):
     """
-        Get the list of models available on OpenAI API
+    Get the list of models available on OpenAI API
     """
+    sec = authenticate(credentials)
+
+    if not sec:
+        response.status_code = 401
+        return {"message": "Invalid token"}
+
     response.status_code = openai_requests.models()[1]
     return openai_requests.models()[0]
 
+
 @app.get("/openai/models/{model_name}")
-def model(model_name: str, response: Response):
+def model(
+    model_name: str,
+    response: Response,
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+):
     """
-        Get the details of a model available on OpenAI API
+    Get the details of a model available on OpenAI API
     """
+    sec = authenticate(credentials)
+
+    if not sec:
+        response.status_code = 401
+        return {"message": "Invalid token"}
+
     response.status_code = openai_requests.model(model_name)[1]
     return openai_requests.model(model_name)[0]
 
+
 @app.post("/openai/chat/completions")
-def post_chat_completions(data: dict, response: Response):
+def post_chat_completions(
+    data: dict, response: Response, credentials=Depends(security)
+):
     """
-        Post a chat to OpenAI API
+    Post a chat to OpenAI API
     """
+    sec = authenticate(credentials)
+
+    if not sec:
+        response.status_code = 401
+        return {"message": "Invalid token"}
+
     resp = openai_requests.post_chat_completions(data)
     return StreamingResponse(resp, media_type="text/json")
 
+
 @app.post("/openai/images/generations")
-def create_image(data: dict, response: Response):
+def create_image(data: dict, response: Response, credentials=Depends(security)):
     """
-        Create an image on OpenAI API
+    Create an image on OpenAI API
     """
+    sec = authenticate(credentials)
+
+    if not sec:
+        response.status_code = 401
+        return {"message": "Invalid token"}
+
     resp = openai_requests.create_image(data)
     return StreamingResponse(resp, media_type="image/png")
 
+
 @app.post("/openai/embeddings")
-def embeddings(data: dict, response: Response):
+def embeddings(data: dict, response: Response, credentials=Depends(security)):
     """
-        Get the embeddings of a text on OpenAI API
+    Get the embeddings of a text on OpenAI API
     """
+
+    sec = authenticate(credentials)
+
+    if not sec:
+        response.status_code = 401
+        return {"message": "Invalid token"}
+
     resp = openai_requests.embeddings(data)
     return StreamingResponse(resp, media_type="text/json")
+
 
 @app.get("/submitJam/{jam_slug}/{finishedURL:path}/{title}")
 async def submit_jams(jam_slug: str, finishedURL: str, title: str):
@@ -226,10 +289,12 @@ async def submit_jams(jam_slug: str, finishedURL: str, title: str):
     except Exception as e:
         return {"message": f"Error: {e}"}
 
+
 @app.get("/getSubmissions")
 async def get_submissions():
     jams = get_submissions_from_database()
     return jams
+
 
 @app.delete("/deleteSubmission")
 async def delete_submission(url: str, password: str = Query(...)):
