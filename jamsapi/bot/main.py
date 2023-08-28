@@ -23,7 +23,9 @@ def openai_token(ack, respond, command):
         date = token.expires_at
         # Format the date into a string
         date = date.strftime("%d/%m/%Y, %H:%M:%S")
-        respond(f"Your token is `{token.token}`. It expires on *{date}*.")
+        respond(
+            f"Your token is `{token.token}`, uses left: *{token.uses_left}* and expires on *{date}*."
+        )
 
 
 @app.command("/openai-create-token")
