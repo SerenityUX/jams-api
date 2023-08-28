@@ -1,7 +1,7 @@
 from pyairtable.orm import Model, fields as F
 import os
 from dotenv import load_dotenv
-import datetime
+from datetime import datetime
 
 load_dotenv()
 
