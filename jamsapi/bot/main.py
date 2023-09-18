@@ -22,7 +22,7 @@ def openai_token(ack, respond, command):
         # Create a datetime object
         date = token.expires_at
         # Format the date into a string
-        date = date.strftime("%d/%m/%Y, %H:%M:%S")
+        date = date.strftime("%Y/%m/%d, %H:%M:%S")
         respond(
             f"Your token is `{token.token}`, uses left: *{token.uses_left}* and expires on *{date}*."
         )
@@ -42,7 +42,7 @@ def openai_create_token(ack, respond, command):
         # Create a datetime object
         date = token.expires_at
         # Format the date into a string
-        date = date.strftime("%d/%m/%Y, %H:%M:%S")
+        date = date.strftime("%Y/%m/%d, %H:%M:%S")
         respond(f"Your token is `{token.token}`. It expires on *{date}*.")
 
 

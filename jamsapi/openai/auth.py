@@ -77,12 +77,20 @@ def get_token_slack_id(token):
 
 def create_token(slack_id):
     token = "".join(random.choices(string.ascii_uppercase + string.digits, k=N))
+
+    uses_left = 500
+
+    last_token = openai_tokens.get_last_revoked_token_by_slack_id(slack_id)
+
+    if last_token is not None:
+        uses_left = last_token.uses_left
+
     openai_tokens.create_token(
         token=token,
         slack_id=slack_id,
         status="Active",
         expires_at=datetime.now() + timedelta(days=30),
-        uses_left=500,
+        uses_left=uses_left,
     )
     return token
 
