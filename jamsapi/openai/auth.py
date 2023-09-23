@@ -87,8 +87,6 @@ def create_token(slack_id):
 
     last_token = openai_tokens.get_last_revoked_token_by_slack_id(slack_id)
 
-    print(last_token)
-
     if last_token is not None:
         uses_left = last_token.uses_left
 
