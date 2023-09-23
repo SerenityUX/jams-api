@@ -14,8 +14,13 @@ def openai_token(ack, respond, command):
     ack()
     slack_id = command["user_id"]
 
-    if openai_tokens.get_token_by_slack_id(slack_id) is None:
+    token = openai_tokens.get_token_by_slack_id(slack_id)
+
+    if token is None:
         respond("You don't have a token yet. Please create one.")
+
+    if token.uses_left == 0:
+        respond("You have hit the monthly usage limit, contact (DM) Arpan if you need more.")
 
     else:
         token = openai_tokens.get_token_by_slack_id(slack_id)

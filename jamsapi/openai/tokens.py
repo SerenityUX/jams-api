@@ -16,6 +16,7 @@ class OpenAIToken(Model):
     status = F.SelectField("Status")
     expires_at = F.DatetimeField("ExpirationTime")
     uses_left = F.IntegerField("UsesLeft")
+    last_reset = F.DatetimeField("Last Reset")
 
     class Meta:
         table_name = "OpenAI Tokens"
@@ -36,6 +37,7 @@ def create_token(token, slack_id, status, expires_at, uses_left):
         status=status,
         expires_at=expires_at,
         uses_left=uses_left,
+        last_reset=datetime.now(),
     )
 
     tokenish.save()
