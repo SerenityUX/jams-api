@@ -42,7 +42,7 @@ def use_token(token):
 
     if token.last_reset < datetime.now() - timedelta(days=30):
         token.uses_left = 499
-        token.last_reset = datetime.now()
+        token.last_reset = token.last_reset + timedelta(days=30)
         token.save()
 
     return True
