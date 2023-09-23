@@ -62,7 +62,9 @@ def get_token_by_slack_id(slack_id):
 
 def get_last_revoked_token_by_slack_id(slack_id):
     #! This is a very inefficient way to do this, but I don't know how to do it better with pyairtable at the moment :(
-    tokens = OpenAIToken.all().sort(reverse=True)
+    tokens = OpenAIToken.all()
+    # Sort by creation date (oldest first)
+    tokens = sorted(tokens, key=lambda x: x.created_at)
     for t in tokens:
         if t.slack_id == slack_id and t.status == "Revoked":
             return t
