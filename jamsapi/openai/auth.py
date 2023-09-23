@@ -96,6 +96,7 @@ def create_token(slack_id):
         status="Active",
         expires_at=datetime.now() + timedelta(days=30),
         uses_left=uses_left,
+        last_reset=last_token.last_reset,
     )
     return token
 

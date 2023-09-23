@@ -30,14 +30,14 @@ class OpenAIToken(Model):
         return self.token
 
 
-def create_token(token, slack_id, status, expires_at, uses_left):
+def create_token(token, slack_id, status, expires_at, uses_left, last_reset=datetime.now()):
     tokenish = OpenAIToken(
         token=token,
         slack_id=slack_id,
         status=status,
         expires_at=expires_at,
         uses_left=uses_left,
-        last_reset=datetime.now(),
+        last_reset=last_reset,
     )
 
     tokenish.save()
