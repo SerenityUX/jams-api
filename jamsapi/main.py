@@ -242,7 +242,7 @@ def post_chat_completions(
         return {"message": "Invalid token"}
 
     resp = openai_requests.post_chat_completions(data)
-    return StreamingResponse(resp, media_type="text/json")
+    return StreamingResponse(resp, media_type="application/json")
 
 
 @app.post("/openai/images/generations")
@@ -273,7 +273,7 @@ def embeddings(data: dict, response: Response, credentials=Depends(security)):
         return {"message": "Invalid token"}
 
     resp = openai_requests.embeddings(data)
-    return StreamingResponse(resp, media_type="text/json")
+    return StreamingResponse(resp, media_type="application/json")
 
 
 @app.get("/submitJam/{jam_slug}/{finishedURL:path}/{title}")
