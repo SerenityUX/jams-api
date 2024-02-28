@@ -1,3 +1,5 @@
+from typing import Optional
+from typing_extensions import Generator
 import requests
 from dotenv import load_dotenv
 import os
@@ -32,11 +34,15 @@ def post_chat_completions(data):
     """
     blocked_models=["gpt-4-turbo-preview", "gpt-4"]
     if data["model"] in blocked_models:
-        return {"error": "This model is not available for public use"}, 403, {"error": "This model is not available for public use"}
+        return {"error": "This model is not available for use at this time."}, 403, {"error": "This model is not available for use at this time."}
+
     try:
-        with requests.post('https://api.openai.com/v1/chat/completions', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"}, stream=True) as req:
-            for chunk in req.iter_content(chunk_size=1024):
-                yield chunk
+        def gen():
+            with requests.post('https://api.openai.com/v1/chat/completions', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"}, stream=True) as req:
+                for chunk in req.iter_content(chunk_size=1024):
+                    yield chunk
+        return gen()
+
     except Exception as e:
         return {"error": str(e)}, 500, {"error": str(e)}
 

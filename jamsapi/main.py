@@ -7,6 +7,7 @@ from datetime import datetime
 import urllib.parse
 import requests
 from bs4 import BeautifulSoup
+from typing import Generator
 import os
 from fastapi.middleware.cors import CORSMiddleware
 import jamsapi.openai.auth as openai_auth
@@ -153,7 +154,7 @@ def save_submission_to_database(jam_slug, title, url):
         cursor = connection.cursor()
 
         insert_query = """
-        INSERT INTO submissions (jam, title, url, timeCreated) 
+        INSERT INTO submissions (jam, title, url, timeCreated)
         VALUES (%s, %s, %s, %s)
         """
         current_time = datetime.now()
@@ -242,6 +243,12 @@ def post_chat_completions(
         return {"message": "Invalid token"}
 
     resp = openai_requests.post_chat_completions(data)
+
+    if resp[1] != 200:
+        response.status_code = resp[1]
+        return resp[0]
+
+
     return StreamingResponse(resp, media_type="application/json")
 
 
