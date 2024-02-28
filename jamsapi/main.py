@@ -244,10 +244,9 @@ def post_chat_completions(
 
     resp = openai_requests.post_chat_completions(data)
 
-    if resp[1] != 200:
+    if isinstance(resp, tuple) and resp[1] != 200:
         response.status_code = resp[1]
         return resp[0]
-
 
     return StreamingResponse(resp, media_type="application/json")
 
