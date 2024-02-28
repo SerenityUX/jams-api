@@ -30,14 +30,17 @@ def post_chat_completions(data):
     """
         Post a chat to OpenAI API
     """
+    blocked_models=["gpt-4-turbo-preview", "gpt-4"]
+    if data["model"] in blocked_models:
+        return {"error": "This model is not available for public use"}, 403, {"error": "This model is not available for public use"}
     try:
         with requests.post('https://api.openai.com/v1/chat/completions', json=data, headers={"Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"}, stream=True) as req:
             for chunk in req.iter_content(chunk_size=1024):
                 yield chunk
     except Exception as e:
         return {"error": str(e)}, 500, {"error": str(e)}
-    
-#* Image 
+
+#* Image
 
 def create_image(data):
     """
@@ -49,7 +52,7 @@ def create_image(data):
                 yield chunk
     except Exception as e:
         return {"error": str(e)}, 500, {"error": str(e)}
-    
+
     # Todo: Add more endpoints that are available on OpenAI API, particularly which require file upload
 
 #* Embeddings
@@ -64,7 +67,7 @@ def embeddings(data):
                 yield chunk
     except Exception as e:
         return {"error": str(e)}, 500, {"error": str(e)}
-    
+
 #* Files
 
 #TODO: Add file upload endpoints
@@ -72,4 +75,3 @@ def embeddings(data):
 #* Audio
 
 #TODO: Add audio endpoints
-
